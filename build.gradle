@@ -37,7 +37,7 @@ googleJavaFormat {
 }
 
 group = 'com.uber.cadence'
-version = '2.7.8'
+version = '2.8.1'
 
 description = '''Uber Cadence Java Client'''
 
@@ -49,7 +49,7 @@ java {
 dependencies {
     errorproneJavac('com.google.errorprone:javac:9+181-r4173-1')
     errorprone('com.google.errorprone:error_prone_core:2.3.3')
-
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
     compile group: 'com.uber.tchannel', name: 'tchannel-core', version: '0.8.5'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'org.apache.thrift', name: 'libthrift', version: '0.9.3'
@@ -68,6 +68,7 @@ license {
     header rootProject.file('license-header.txt')
     skipExistingHeaders true
     exclude 'com/uber/cadence/*.java' // generated code
+    excludes(["**/*.json"])
 }
 
 task initDlsSubmodule(type: Exec) {
@@ -116,9 +117,9 @@ task createProperties(dependsOn: processResources) {
     }
 }
 
-classes {
-    dependsOn createProperties
-}
+//classes {
+//    dependsOn createProperties
+//}
 
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
@@ -153,57 +154,60 @@ publishing {
 
     publications {
         maven(MavenPublication) {
-            pom.withXml {
-                asNode().with {
-                    appendNode('packaging', 'jar')
-                    appendNode('name', 'cadence-client')
-                    appendNode('description', description)
-                    appendNode('url', 'https://github.com/uber-java/cadence-client')
-                    appendNode('scm').with {
-                        appendNode('url', 'https://github.com/uber-java/cadence-client')
-                        appendNode('connection', 'git@github.com:uber-java/cadence-client.git')
-                    }
-                    appendNode('licenses').with {
-                        appendNode('license').with {
-                            appendNode('name', 'The Apache License, Version 2.0')
-                            appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
-                        }
-                    }
-                    appendNode('developers').with {
-                        appendNode('maxim').with {
-                            appendNode('id', 'maxim')
-                            appendNode('name', 'Maxim Fateev')
-                            appendNode('email', 'maxim@uber.com')
-                        }
-                        appendNode('developer').with {
-                            appendNode('id', 'meiliang')
-                            appendNode('name', 'Liang Mei')
-                            appendNode('email', 'meiliang@uber.com')
-                        }
-                    }
-                }
-            }
-        }
-
-        mavenJava(MavenPublication) {
             from components.java
             artifact javadocJar
             artifact sourcesJar
+//            pom.withXml {
+//                asNode().with {
+//                    appendNode('packaging', 'jar')
+//                    appendNode('name', 'cadence-client')
+//                    appendNode('description', description)
+//                    appendNode('url', 'https://github.com/uber-java/cadence-client')
+//                    appendNode('scm').with {
+//                        appendNode('url', 'https://github.com/uber-java/cadence-client')
+//                        appendNode('connection', 'git@github.com:uber-java/cadence-client.git')
+//                    }
+//                    appendNode('licenses').with {
+//                        appendNode('license').with {
+//                            appendNode('name', 'The Apache License, Version 2.0')
+//                            appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
+//                        }
+//                    }
+//                    appendNode('developers').with {
+//                        appendNode('maxim').with {
+//                            appendNode('id', 'maxim')
+//                            appendNode('name', 'Maxim Fateev')
+//                            appendNode('email', 'maxim@uber.com')
+//                        }
+//                        appendNode('developer').with {
+//                            appendNode('id', 'meiliang')
+//                            appendNode('name', 'Liang Mei')
+//                            appendNode('email', 'meiliang@uber.com')
+//                        }
+//                    }
+//                }
+//            }
         }
+
+//        mavenJava(MavenPublication) {
+//            from components.java
+//            artifact javadocJar
+//            artifact sourcesJar
+//        }
     }
-    repositories {
-        maven {
-            credentials {
-                username ossrhUsername
-                password ossrhPassword
-            }
-            if(project.version.endsWith('-SNAPSHOT')) {
-                url 'https://oss.sonatype.org/content/repositories/snapshots/'
-            } else {
-                url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-            }
-        }
-    }
+//    repositories {
+//        maven {
+//            credentials {
+//                username ossrhUsername
+//                password ossrhPassword
+//            }
+//            if(project.version.endsWith('-SNAPSHOT')) {
+//                url 'https://oss.sonatype.org/content/repositories/snapshots/'
+//            } else {
+//                url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+//            }
+//        }
+//    }
 }
 
 task registerDomain(type:JavaExec) {
